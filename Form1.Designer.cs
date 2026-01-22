@@ -31,19 +31,30 @@ namespace WinFormsCameraDemo
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btnStart = new Button();
             btnStop = new Button();
-            btnTrigger = new Button();
+            btnCapcture = new Button();
             pictureBox1 = new PictureBox();
             lblStatus = new Label();
+            pictureBox2 = new PictureBox();
+            flowCapturedImages = new FlowLayoutPanel();
+            fileSystemWatcher1 = new FileSystemWatcher();
+            rbSoftware = new RadioButton();
+            rbHardware = new RadioButton();
+            rbContinuous = new RadioButton();
+            imageList1 = new ImageList(components);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)fileSystemWatcher1).BeginInit();
             SuspendLayout();
             // 
             // btnStart
             // 
-            btnStart.Location = new Point(80, 44);
+            btnStart.Location = new Point(33, 96);
+            btnStart.Margin = new Padding(3, 2, 3, 2);
             btnStart.Name = "btnStart";
-            btnStart.Size = new Size(94, 29);
+            btnStart.Size = new Size(82, 22);
             btnStart.TabIndex = 0;
             btnStart.Text = "Start";
             btnStart.UseVisualStyleBackColor = true;
@@ -51,55 +62,134 @@ namespace WinFormsCameraDemo
             // 
             // btnStop
             // 
-            btnStop.Location = new Point(80, 92);
+            btnStop.Location = new Point(135, 96);
+            btnStop.Margin = new Padding(3, 2, 3, 2);
             btnStop.Name = "btnStop";
-            btnStop.Size = new Size(94, 29);
+            btnStop.Size = new Size(82, 22);
             btnStop.TabIndex = 0;
             btnStop.Text = "Stop";
             btnStop.UseVisualStyleBackColor = true;
             btnStop.Click += btnStop_Click;
             // 
-            // btnTrigger
+            // btnCapcture
             // 
-            btnTrigger.Location = new Point(80, 136);
-            btnTrigger.Name = "btnTrigger";
-            btnTrigger.Size = new Size(94, 29);
-            btnTrigger.TabIndex = 0;
-            btnTrigger.Text = "Trigger";
-            btnTrigger.UseVisualStyleBackColor = true;
+            btnCapcture.Location = new Point(235, 96);
+            btnCapcture.Margin = new Padding(3, 2, 3, 2);
+            btnCapcture.Name = "btnCapcture";
+            btnCapcture.Size = new Size(82, 22);
+            btnCapcture.TabIndex = 0;
+            btnCapcture.Text = "Capcture";
+            btnCapcture.UseVisualStyleBackColor = true;
+            btnCapcture.Click += btnCapcture_Click;
             // 
             // pictureBox1
             // 
             pictureBox1.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox1.Location = new Point(274, 44);
+            pictureBox1.Location = new Point(33, 136);
+            pictureBox1.Margin = new Padding(3, 2, 3, 2);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(311, 121);
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.Size = new Size(402, 255);
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
             // lblStatus
             // 
             lblStatus.AutoSize = true;
-            lblStatus.Location = new Point(403, 184);
+            lblStatus.Location = new Point(257, 418);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(34, 20);
+            lblStatus.Size = new Size(26, 15);
             lblStatus.TabIndex = 2;
             lblStatus.Text = "Idle";
             // 
+            // pictureBox2
+            // 
+            pictureBox2.BorderStyle = BorderStyle.FixedSingle;
+            pictureBox2.Location = new Point(475, 20);
+            pictureBox2.Margin = new Padding(3, 2, 3, 2);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(181, 127);
+            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox2.TabIndex = 1;
+            pictureBox2.TabStop = false;
+            // 
+            // flowCapturedImages
+            // 
+            flowCapturedImages.AutoScroll = true;
+            flowCapturedImages.BorderStyle = BorderStyle.FixedSingle;
+            flowCapturedImages.Location = new Point(475, 177);
+            flowCapturedImages.Name = "flowCapturedImages";
+            flowCapturedImages.Size = new Size(515, 355);
+            flowCapturedImages.TabIndex = 3;
+            flowCapturedImages.Paint += flowCapturedImages_Paint;
+            // 
+            // fileSystemWatcher1
+            // 
+            fileSystemWatcher1.EnableRaisingEvents = true;
+            fileSystemWatcher1.SynchronizingObject = this;
+            // 
+            // rbSoftware
+            // 
+            rbSoftware.AutoSize = true;
+            rbSoftware.Location = new Point(33, 43);
+            rbSoftware.Name = "rbSoftware";
+            rbSoftware.Size = new Size(71, 19);
+            rbSoftware.TabIndex = 4;
+            rbSoftware.TabStop = true;
+            rbSoftware.Text = "Software";
+            rbSoftware.UseVisualStyleBackColor = true;
+            // 
+            // rbHardware
+            // 
+            rbHardware.AutoSize = true;
+            rbHardware.Location = new Point(33, 65);
+            rbHardware.Name = "rbHardware";
+            rbHardware.Size = new Size(76, 19);
+            rbHardware.TabIndex = 4;
+            rbHardware.TabStop = true;
+            rbHardware.Text = "Hardware";
+            rbHardware.UseVisualStyleBackColor = true;
+            // 
+            // rbContinuous
+            // 
+            rbContinuous.AutoSize = true;
+            rbContinuous.Location = new Point(33, 22);
+            rbContinuous.Name = "rbContinuous";
+            rbContinuous.Size = new Size(87, 19);
+            rbContinuous.TabIndex = 4;
+            rbContinuous.TabStop = true;
+            rbContinuous.Text = "Continuous";
+            rbContinuous.UseVisualStyleBackColor = true;
+            // 
+            // imageList1
+            // 
+            imageList1.ColorDepth = ColorDepth.Depth32Bit;
+            imageList1.ImageSize = new Size(16, 16);
+            imageList1.TransparentColor = Color.Transparent;
+            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(631, 330);
+            ClientSize = new Size(1028, 745);
+            Controls.Add(rbContinuous);
+            Controls.Add(rbHardware);
+            Controls.Add(rbSoftware);
+            Controls.Add(flowCapturedImages);
             Controls.Add(lblStatus);
+            Controls.Add(pictureBox2);
             Controls.Add(pictureBox1);
-            Controls.Add(btnTrigger);
+            Controls.Add(btnCapcture);
             Controls.Add(btnStop);
             Controls.Add(btnStart);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
             Text = "Form1";
+            WindowState = FormWindowState.Maximized;
+            Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)fileSystemWatcher1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -108,8 +198,15 @@ namespace WinFormsCameraDemo
 
         private Button btnStart;
         private Button btnStop;
-        private Button btnTrigger;
+        private Button btnCapcture;
         private PictureBox pictureBox1;
         private Label lblStatus;
+        private PictureBox pictureBox2;
+        private FlowLayoutPanel flowCapturedImages;
+        private FileSystemWatcher fileSystemWatcher1;
+        private RadioButton rbSoftware;
+        private RadioButton rbContinuous;
+        private RadioButton rbHardware;
+        private ImageList imageList1;
     }
 }
