@@ -23,14 +23,27 @@ namespace WinFormsCameraDemo
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            //try
-            //{
-            //    int cameraCount = CameraSdk.CameraEnumerateDevice(out m_DevInfoList);
 
-
-
-            //}
         }
+        void SetContinuousMode()
+        {
+            MvApi.CameraSetTriggerMode(m_hCamera, 0);
+            MvApi.CameraPlay(m_hCamera);
+
+        }
+        void SetSoftwareTriggerMode()
+        {
+            MvApi.CameraSetTriggerMode(m_hCamera, 1);
+            //MvApi.CameraSetTriggerSource(m_hCamera, 1);
+            MvApi.CameraPlay(m_hCamera);
+        }
+        void SetHardwareTriggerMode()
+        {
+            MvApi.CameraSetTriggerMode(m_hCamera, 1);
+            //MvApi.CameraSetTriggerSource(m_hCamera, 0);
+            MvApi.CameraPlay(m_hCamera);
+        }
+
 
         private void btnStart_Click(object sender, EventArgs e)
         {
@@ -46,19 +59,23 @@ namespace WinFormsCameraDemo
             {
                 MvApi.CameraGrabber_StopLive(m_Grabber);
                 //MvApi.CameraGrabber_Stop(m_Grabber);
+                //MvApi.CameraGrabber_Close(m_Grabber);
                 MvApi.CameraGrabber_Destroy(m_Grabber);
                 m_Grabber = IntPtr.Zero;
             }
+            m_hCamera = 0;
+            //pictureBox1.Image ?.Dispose();
+            //pictureBox1.Image = null;
 
-            //if (m_hCamera != IntPtr.Zero)
-            //{
-            //    CameraSdk.CameraUnInit(m_hCamera);
-            //    m_hCamera = IntPtr.Zero;
-            //}
+            lblStatus.Text = "Idle";
+
         }
+
 
         private void InitCamera()
         {
+
+            //MvApi.CameraSetTriggerMode(m_hCamera, 0);
             CameraSdkStatus status = 0;
 
             tSdkCameraDevInfo[] DevList;
@@ -109,9 +126,29 @@ namespace WinFormsCameraDemo
             {
                 MessageBox.Show(String.Format("Failed to open the camera, reason:{0}", status));
             }
+            ApplyTriggerMode();
         }
-
-
+        void ApplyTriggerMode()
+        {
+            if (rbContinuous.Checked)
+            {
+                MvApi.CameraSetTriggerMode(m_hCamera, 0);
+                btnCapcture.Enabled = false;
+                lblStatus.Text = "Continuous Mode";
+            }
+            else if (rbSoftware.Checked)
+            {
+                MvApi.CameraSetTriggerMode(m_hCamera, 1);
+                btnCapcture.Enabled = true;
+                lblStatus.Text = "Software Trigger Mode";
+            }
+            else if (rbHardware.Checked)
+            {
+                MvApi.CameraSetTriggerMode(m_hCamera, 1);
+                btnCapcture.Enabled = false;
+                lblStatus.Text = "Frame Trigger Mode";
+            }
+        }
 
         private void CameraGrabberFrameCallback(
             IntPtr Grabber,
@@ -166,18 +203,26 @@ namespace WinFormsCameraDemo
 
         private void btnCapcture_Click(object sender, EventArgs e)
         {
+            if (!rbSoftware.Checked)
+            {
+                MessageBox.Show("Switch to Software Trigger Mode");
+                return;
+            }
+
             if (m_Grabber == IntPtr.Zero)
             {
+                lblStatus.Text = "Camera is not running";
                 MessageBox.Show("Camera is not running");
                 return;
             }
             if (m_Grabber != IntPtr.Zero)
-            {                                                      
+            {
+                lblStatus.Text = "Capturing...";
                 IntPtr pImage;
 
                 if (MvApi.CameraGrabber_SaveImage(m_Grabber, out pImage, 2000) == CameraSdkStatus.CAMERA_STATUS_SUCCESS)
-                {                                                                                                      
-                  // 1. Get image information using IntPtr for the header
+                {
+                    // 1. Get image information using IntPtr for the header
                     IntPtr pDataBuffer;
                     IntPtr pHeadPtr;
                     MvApi.CameraImage_GetData(pImage, out pDataBuffer, out pHeadPtr);
@@ -202,7 +247,7 @@ namespace WinFormsCameraDemo
                         // This is critical because tempImg is invalid once CameraImage_Destroy is called
                         Bitmap CapcturedImg = new Bitmap(tempImg);
 
-                       
+
                         pictureBox2.Image?.Dispose();
                         pictureBox2.Image = new Bitmap(CapcturedImg);
                         addCapcturedImage(new Bitmap(CapcturedImg));
@@ -227,6 +272,20 @@ namespace WinFormsCameraDemo
         }
 
         private void flowCapturedImages_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void rbContinuous_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbContinuous.Checked)
+            {
+                SetContinuousMode();
+
+            }
+        }
+
+        private void label2_Click(object sender, EventArgs e)
         {
 
         }
