@@ -15,6 +15,12 @@ namespace WinFormsCameraDemo
         protected tSdkCameraDevInfo m_DevInfo;
         protected pfnCameraGrabberFrameCallback m_FrameCallback;
         protected CameraHandle m_hCamera = 0;
+        string ImageFolderPath;
+        string csvFilePath;
+
+        int currentId = 1;
+
+        //string folderpath = System.IO.Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "CapturedImages");
         public Form1()
         {
             InitializeComponent();
@@ -23,7 +29,40 @@ namespace WinFormsCameraDemo
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            //MessageBox.Show(folderpath);
+            string basepath = AppDomain.CurrentDomain.BaseDirectory;
+            ImageFolderPath = System.IO.Path.Combine(basepath, "CapturedImages");
+            csvFilePath = System.IO.Path.Combine(basepath, "ImageData.csv");
 
+
+            if (!System.IO.Directory.Exists(ImageFolderPath))
+            {
+                System.IO.Directory.CreateDirectory(ImageFolderPath);
+            }
+            if(!System.IO.File.Exists(csvFilePath))
+            {
+                System.IO.File.WriteAllText(csvFilePath, "ID,Date,ImageName\n");
+            }
+            LoadCsvtoGrid();
+        }
+        void LoadCsvtoGrid() {
+            dataGridView1.Rows.Clear();
+            string[] lines = System.IO.File.ReadAllLines(csvFilePath);
+
+            for(int i = 1; i < lines.Length; i++)
+            {
+                if (string.IsNullOrEmpty(lines[i])) continue;
+
+                string[] parts = lines[i].Split(',');
+                dataGridView1.Rows.Add(parts);
+
+                int lastId;
+                if (int.TryParse(parts[0], out lastId))
+                {
+                    currentId = lastId + 1;
+
+                }
+            }
         }
         void SetContinuousMode()
         {
@@ -45,11 +84,20 @@ namespace WinFormsCameraDemo
         }
 
 
-        private void btnStart_Click(object sender, EventArgs e)
+        private async void btnStart_Click(object sender, EventArgs e)
         {
             InitCamera();
             if (m_Grabber != IntPtr.Zero)
+            {
                 MvApi.CameraGrabber_StartLive(m_Grabber);
+                await System.Threading.Tasks.Task.Delay(300);
+
+                // auto first capture
+                CaptureAndSaveImage();
+
+                // auto first capture
+                CaptureAndSaveImage();
+            }
         }
 
         private void btnStop_Click(object sender, EventArgs e)
@@ -195,19 +243,53 @@ namespace WinFormsCameraDemo
             pb.Image = Image;
 
 
-            flowCapturedImages.Invoke(new Action(() =>
-            {
-                flowCapturedImages.Controls.Add(pb);
-            }));
+            //flowCapturedImages.Invoke(new Action(() =>
+            //{
+            //    flowCapturedImages.Controls.Add(pb);
+            //}));
         }
+        void CaptureAndSaveImage()
+        {
+            if (m_Grabber == IntPtr.Zero)
+                return;
+
+            IntPtr pImage;
+
+            if (MvApi.CameraGrabber_SaveImage(m_Grabber, out pImage, 2000)
+                == CameraSdkStatus.CAMERA_STATUS_SUCCESS)
+            {
+                // generate image name
+                string imageName = $"IMG_{DateTime.Now:yyyyMMdd_HHmmss}_{currentId}.bmp";
+                string imageFullPath = System.IO.Path.Combine(ImageFolderPath, imageName);
+
+                // save image
+                MvApi.CameraImage_SaveAsBmp(pImage, imageFullPath);
+
+                // log entry (CSV + Grid)
+                AddLogEntry(imageName);
+
+                // release SDK image
+                MvApi.CameraImage_Destroy(pImage);
+            }
+            else
+            {
+                MessageBox.Show("Image capture failed");
+            }
+        }
+
 
         private void btnCapcture_Click(object sender, EventArgs e)
         {
+            //string imageName = $"IMG_{DateTime.Now:yyyyMMdd_HHmmss}_{currentId}.bmp";
+            //string imagePath = System.IO.Path.Combine(ImageFolderPath, imageName);
+
             if (!rbSoftware.Checked)
             {
                 MessageBox.Show("Switch to Software Trigger Mode");
                 return;
             }
+
+            CaptureAndSaveImage();
 
             if (m_Grabber == IntPtr.Zero)
             {
@@ -247,17 +329,22 @@ namespace WinFormsCameraDemo
                         // This is critical because tempImg is invalid once CameraImage_Destroy is called
                         Bitmap CapcturedImg = new Bitmap(tempImg);
 
+                        //string ImgName = 
+
 
                         pictureBox2.Image?.Dispose();
                         pictureBox2.Image = new Bitmap(CapcturedImg);
                         addCapcturedImage(new Bitmap(CapcturedImg));
+                        //MessageBox.Show("Image capctured ");
                     }
 
                     // 5. Save to file
                     string filename = System.IO.Path.Combine(
                         AppDomain.CurrentDomain.BaseDirectory.ToString(),
                         string.Format("{0}.bmp", System.Environment.TickCount));
-                    MvApi.CameraImage_SaveAsBmp(pImage, filename);
+                    MvApi.CameraImage_SaveAsBmp(pImage, ImageFolderPath);
+                    //AddLogEntry(imageName);
+                    //MvApi.CameraImage_SaveAsBmp(pImage, filename);
 
                     // 6. Release the SDK image handle
                     MvApi.CameraImage_Destroy(pImage);
@@ -270,6 +357,21 @@ namespace WinFormsCameraDemo
                 }
             }
         }
+        void AddLogEntry(string imageName)
+        {
+            string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            // 1. Append to CSV
+            string line = $"{currentId},{date},{imageName}\n";
+            System.IO.File.AppendAllText(csvFilePath, line);
+
+            // 2. Add to DataGridView
+            dataGridView1.Rows.Add(currentId, date, imageName);
+
+            // 3. Increment ID
+            currentId++;
+        }
+
 
         private void flowCapturedImages_Paint(object sender, PaintEventArgs e)
         {
@@ -287,7 +389,7 @@ namespace WinFormsCameraDemo
 
         private void label2_Click(object sender, EventArgs e)
         {
-
+            
         }
     }
 }

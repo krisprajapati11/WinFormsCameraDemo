@@ -37,7 +37,6 @@ namespace WinFormsCameraDemo
             btnCapcture = new Button();
             lblStatus = new Label();
             pictureBox2 = new PictureBox();
-            flowCapturedImages = new FlowLayoutPanel();
             fileSystemWatcher1 = new FileSystemWatcher();
             rbSoftware = new RadioButton();
             rbHardware = new RadioButton();
@@ -47,16 +46,21 @@ namespace WinFormsCameraDemo
             pictureBox1 = new PictureBox();
             label1 = new Label();
             groupBox2 = new GroupBox();
+            dataGridView1 = new DataGridView();
+            clmID = new DataGridViewTextBoxColumn();
+            clmDate = new DataGridViewTextBoxColumn();
+            clmImg = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)fileSystemWatcher1).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // btnStart
             // 
-            btnStart.Location = new Point(33, 96);
+            btnStart.Location = new Point(31, 101);
             btnStart.Margin = new Padding(3, 2, 3, 2);
             btnStart.Name = "btnStart";
             btnStart.Size = new Size(82, 22);
@@ -67,7 +71,7 @@ namespace WinFormsCameraDemo
             // 
             // btnStop
             // 
-            btnStop.Location = new Point(135, 96);
+            btnStop.Location = new Point(131, 101);
             btnStop.Margin = new Padding(3, 2, 3, 2);
             btnStop.Name = "btnStop";
             btnStop.Size = new Size(82, 22);
@@ -78,7 +82,7 @@ namespace WinFormsCameraDemo
             // 
             // btnCapcture
             // 
-            btnCapcture.Location = new Point(235, 96);
+            btnCapcture.Location = new Point(233, 101);
             btnCapcture.Margin = new Padding(3, 2, 3, 2);
             btnCapcture.Name = "btnCapcture";
             btnCapcture.Size = new Size(82, 22);
@@ -107,16 +111,6 @@ namespace WinFormsCameraDemo
             pictureBox2.TabIndex = 1;
             pictureBox2.TabStop = false;
             // 
-            // flowCapturedImages
-            // 
-            flowCapturedImages.AutoScroll = true;
-            flowCapturedImages.BorderStyle = BorderStyle.FixedSingle;
-            flowCapturedImages.Location = new Point(475, 177);
-            flowCapturedImages.Name = "flowCapturedImages";
-            flowCapturedImages.Size = new Size(515, 355);
-            flowCapturedImages.TabIndex = 3;
-            flowCapturedImages.Paint += flowCapturedImages_Paint;
-            // 
             // fileSystemWatcher1
             // 
             fileSystemWatcher1.EnableRaisingEvents = true;
@@ -127,7 +121,7 @@ namespace WinFormsCameraDemo
             rbSoftware.AutoSize = true;
             rbSoftware.Location = new Point(10, 38);
             rbSoftware.Name = "rbSoftware";
-            rbSoftware.Size = new Size(71, 19);
+            rbSoftware.Size = new Size(72, 19);
             rbSoftware.TabIndex = 4;
             rbSoftware.TabStop = true;
             rbSoftware.Text = "Software";
@@ -149,7 +143,7 @@ namespace WinFormsCameraDemo
             rbContinuous.AutoSize = true;
             rbContinuous.Location = new Point(10, 17);
             rbContinuous.Name = "rbContinuous";
-            rbContinuous.Size = new Size(87, 19);
+            rbContinuous.Size = new Size(86, 19);
             rbContinuous.TabIndex = 4;
             rbContinuous.TabStop = true;
             rbContinuous.Text = "Continuous";
@@ -167,9 +161,10 @@ namespace WinFormsCameraDemo
             groupBox1.Controls.Add(rbSoftware);
             groupBox1.Controls.Add(rbContinuous);
             groupBox1.Controls.Add(rbHardware);
-            groupBox1.Location = new Point(29, 12);
+            groupBox1.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            groupBox1.Location = new Point(15, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(288, 79);
+            groupBox1.Size = new Size(389, 79);
             groupBox1.TabIndex = 5;
             groupBox1.TabStop = false;
             groupBox1.Text = "TriggerMode";
@@ -188,7 +183,7 @@ namespace WinFormsCameraDemo
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(12, 132);
+            label1.Location = new Point(15, 136);
             label1.Name = "label1";
             label1.Size = new Size(69, 15);
             label1.TabIndex = 6;
@@ -197,23 +192,47 @@ namespace WinFormsCameraDemo
             // groupBox2
             // 
             groupBox2.Controls.Add(pictureBox2);
-            groupBox2.Location = new Point(496, 12);
+            groupBox2.Location = new Point(440, 12);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(210, 145);
             groupBox2.TabIndex = 7;
             groupBox2.TabStop = false;
-            groupBox2.Text = "C";
+            groupBox2.Text = "CapcturedImg";
+            // 
+            // dataGridView1
+            // 
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { clmID, clmDate, clmImg });
+            dataGridView1.Location = new Point(446, 181);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.Size = new Size(343, 220);
+            dataGridView1.TabIndex = 9;
+            // 
+            // clmID
+            // 
+            clmID.HeaderText = "ID";
+            clmID.Name = "clmID";
+            // 
+            // clmDate
+            // 
+            clmDate.HeaderText = "Date";
+            clmDate.Name = "clmDate";
+            // 
+            // clmImg
+            // 
+            clmImg.HeaderText = "Images";
+            clmImg.Name = "clmImg";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1028, 745);
+            Controls.Add(dataGridView1);
             Controls.Add(groupBox2);
             Controls.Add(label1);
             Controls.Add(pictureBox1);
             Controls.Add(groupBox1);
-            Controls.Add(flowCapturedImages);
             Controls.Add(lblStatus);
             Controls.Add(btnCapcture);
             Controls.Add(btnStop);
@@ -229,6 +248,7 @@ namespace WinFormsCameraDemo
             groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             groupBox2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -240,7 +260,6 @@ namespace WinFormsCameraDemo
         private Button btnCapcture;
         private Label lblStatus;
         private PictureBox pictureBox2;
-        private FlowLayoutPanel flowCapturedImages;
         private FileSystemWatcher fileSystemWatcher1;
         private RadioButton rbSoftware;
         private RadioButton rbContinuous;
@@ -250,5 +269,9 @@ namespace WinFormsCameraDemo
         private Label label1;
         private PictureBox pictureBox1;
         private GroupBox groupBox2;
+        private DataGridView dataGridView1;
+        private DataGridViewTextBoxColumn clmID;
+        private DataGridViewTextBoxColumn clmDate;
+        private DataGridViewTextBoxColumn clmImg;
     }
 }
