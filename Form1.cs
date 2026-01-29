@@ -184,7 +184,7 @@ namespace WinFormsCameraDemo
                 btnCapcture.Enabled = false;
                 lblStatus.Text = "Continuous Mode";
             }
-            else if (rbSoftware.Checked)
+             if (rbSoftware.Checked)
             {
                 MvApi.CameraSetTriggerMode(m_hCamera, 1);
                 btnCapcture.Enabled = true;
@@ -264,6 +264,7 @@ namespace WinFormsCameraDemo
 
                 // save image
                 MvApi.CameraImage_SaveAsBmp(pImage, imageFullPath);
+                 
 
                 // log entry (CSV + Grid)
                 AddLogEntry(imageName);

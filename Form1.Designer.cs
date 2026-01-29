@@ -239,6 +239,7 @@ namespace WinFormsCameraDemo
             Controls.Add(btnStart);
             Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
             WindowState = FormWindowState.Maximized;
             Load += Form1_Load;
